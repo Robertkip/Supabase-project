@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Navbar, Container, Nav, Form, Row, Col, Button } from 'react-bootstrap';
+import { Navbar, Container, Nav, Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import './App.css';
 import Productcard from './Productcard';
 import { supabase } from './SupabaseClient';
 
 function App() {
+  const [show, setShow] = useState(false);
+
   const [country_name, setCountry_Name] = useState('');
   const [iso_two, setIso_two] = useState('');
   const [iso_three, setIso_three] = useState('');
@@ -15,6 +17,10 @@ function App() {
   const [total_population, setTotal_population] = useState('');
   const [prev_all_forms, setPrev_all_forms] = useState('');
   const [estimates, setEstimates] = useState([]);
+
+  // Handle modal open/close
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   useEffect(() => {
     getEstimates();
@@ -71,6 +77,7 @@ function App() {
       if (error) throw error;
       alert('TB Estimate created!');
       getEstimates(); // Re-fetch estimates after creation
+      handleClose(); // Close the modal after
     } catch (error) {
       alert(error.message);
     }
@@ -90,6 +97,14 @@ function App() {
         <Row>
           <Col xs={12} md={8}>
             <h3>Create Elements for Supabase Database</h3>
+            <Button variant="primary" onClick={handleShow}>
+            Create Tb Estimates
+          </Button>
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Create Element</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
             <Form.Label>Country Name</Form.Label>
             <Form.Control
               type="text"
@@ -147,9 +162,16 @@ function App() {
               onChange={(e) => setPrev_all_forms(e.target.value)}
             />
             <br />
-            <Button variant="primary" onClick={createEstimates}>
-              Create an Element
-            </Button>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={createEstimates}>
+                Create Tb estimate
+              </Button>
+            </Modal.Footer>
+          </Modal>
           </Col>
         </Row>
         <hr />
